@@ -1,0 +1,24 @@
+85-93
+223-253
+240-255
+
+62-72
+95-125
+110-140
+
+42 encoder counts per rotation of motor
+motor spins 12.75 times for the wheel to spin once
+Circumference = 8*pi = 25.13 inches
+12.75 * 42 = 535.5 encoder counts per one wheel rotation
+1/12.75 * 42 = 3.29 encoder counts per one wheel rotation
+
+25 encoder counts = 52 inches
+50 encoder counts = 101 inches
+75 encoder counts = 152 inches
+
+10 encoder counts = 20 inches
+
+Motor turns 25 times
+
+1 wheel rotation: 2 inches over
+2 wheel rotations: ~ 1 inch over
