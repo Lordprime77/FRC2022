@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import javax.sound.sampled.SourceDataLine;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.*;
+import com.ctre.phoenix.mo.         torcontrol.can.*;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 //import edu.wpi.first.wpilibj.
