@@ -139,6 +139,11 @@ public class Drivetrain {
         blMotor.getEncoder().setPosition(0);
         brMotor.getEncoder().setPosition(0);
     }
+
+    public boolean isMoving()
+    {
+        return flMotor.getEncoder().getVelocity() > 0.05 && frMotor.getEncoder().getVelocity() > 0.05 && blMotor.getEncoder().getVelocity() > 0.05 && brMotor.getEncoder().getVelocity() > 0.05;
+    }
 }
 
 

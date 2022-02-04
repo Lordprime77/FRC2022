@@ -13,12 +13,12 @@ import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 
 import javax.sound.sampled.SourceDataLine;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.*;
+//import com.ctre.phoenix.motorcontrol.ControlMode;
+//import com.ctre.phoenix.motorcontrol.can.*;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 //import edu.wpi.first.wpilibj.
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+//import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxAlternateEncoder.Type;
@@ -70,7 +70,7 @@ public class Robot extends TimedRobot {
 
       switch(stage) {
       case 1 : {
-        drive.driveTrainByInches(50,0);
+        drive.driveTrainByInches(50.0, 0);
         if(autoTimer.get() > 4.0){
           drive.resetDriveTrainEncoders();
           stage = 2;
@@ -78,7 +78,7 @@ public class Robot extends TimedRobot {
         break;
       }
       case 2 : {
-        drive.driveTrainByInches(100.0,1);
+        drive.driveTrainByInches(100.0, 1);
         if(autoTimer.get() > 15.0){
           drive.resetDriveTrainEncoders();
           stage = 3;
@@ -86,7 +86,7 @@ public class Robot extends TimedRobot {
         break;
       }
       case 3 : {
-        drive.driveTrainByInches(50,0);
+        drive.driveTrainByInches(50.0, 0);
         if(autoTimer.get() > 20.0){
           drive.resetDriveTrainEncoders();
           stage = 4;
@@ -122,82 +122,143 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     drive.init();
     drive.resetDriveTrainEncoders();
+    drive.turningTimer.start();
   }
 
   @Override
   public void teleopPeriodic() {
+    
+
+    if(!drive.turningL90 && !drive.turningR90){
+      //drive.driveTrainTeleop();
+    }
     // System.out.println(drive.inchesToEncoders(27));
     // System.out.println(drive.encodersToInches(drive.inchesToEncoders(27)));
-    System.out.println("position: " + drive.flMotor.getEncoder().getPosition());
-    System.out.println("timer: " + drive.turningTimer.get());
-    System.out.println("turngoal: " + drive.turnGoal);
-    System.out.println("turningEncoders: " + drive.turningEncoders);
+    System.out.println("FL position: " + drive.flMotor.getEncoder().getPosition());
+    System.out.println("FR position: " + drive.frMotor.getEncoder().getPosition());
+    System.out.println("BL position: " + drive.blMotor.getEncoder().getPosition());
+    System.out.println("BR position: " + drive.brMotor.getEncoder().getPosition());
+    System.out.println("Timer: " + drive.turningTimer.get() + " s");
 
     if(this.xbox.getRawButton(1) && drive.button1Boolean){
       if(drive.haventresetEncodersYet){
         drive.resetDriveTrainEncoders();
         drive.haventresetEncodersYet = false;
       }
+      
       drive.turningL90 = true;
       drive.turnGoal += drive.ninetyDegreeTurnInches;
-      //drive.turnGoal += 2;
       drive.turningTimer.reset();
-      drive.turningTimer.start();
     }
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     if(this.xbox.getRawButton(2) && drive.button2Boolean){
-      drive.turningEncoders = drive.flMotor.getEncoder().getPosition();
-      drive.turningR90 = true;
-      if(drive.turningL90){
+      if(drive.haventresetEncodersYet){
         drive.resetDriveTrainEncoders();
+        drive.haventresetEncodersYet = false;
       }
+
+      drive.turningR90 = true;
       drive.turnGoal += drive.ninetyDegreeTurnInches;
       drive.turningTimer.reset();
-      drive.turningTimer.start();
     }
     //////////////////////////////////////////////////////////////////////////////////////////////////////
 
     if(drive.turningL90){
-      // drive.mecanumDrive.driveCartesian(0.0, 0.0, this.quadraticPositionAndSpeed(0.1, 0.5, , currentPosition));
-      // this.quadraticPositionAndSpeed(0.1, 0.5, positionGoal, currentPosition)
-      if(!drive.turningR90){
-        drive.driveTrainByInches(drive.turnGoal, 4);
+      drive.driveTrainByInches(drive.turnGoal, 4);
 
-        if(drive.turningTimer.get() > 0.75){ // need to create variables for how long a turn is supposed to take
-          drive.turningL90 = false;
-          drive.haventresetEncodersYet = true;
-          drive.turningEncoders = 0.0;
-          drive.turnGoal = 0.0;
-          
+      if(drive.turningTimer.get() > 1.4){ // need to create variables for how long a turn is supposed to take
+        drive.resetDriveTrainEncoders();
+        drive.turningL90 = false;
+        drive.haventresetEncodersYet = true;
+        drive.turnGoal = 0.0;
         }
-      }
     }
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     if(drive.turningR90){
-      // if(drive.turningL90){
-      //   drive.driveTrainByInches(drive.encodersToInches(drive.turningEncoders), 5);
-      // }
+      drive.driveTrainByInches(drive.turnGoal, 5);
 
-      if(!drive.turningL90){
-        drive.driveTrainByInches(drive.turnGoal, 5);
-
-        if(drive.turningTimer.get() > 0.75){ // need to create variables for how long a turn is supposed to take
-          drive.turningL90 = false;
-          drive.haventresetEncodersYet = true;
-          drive.turningEncoders = 0.0;
-          drive.turnGoal = 0.0;
-        }
+      if(drive.turningTimer.get() > 1.4){ // need to create variables for how long a turn is supposed to take
+        drive.resetDriveTrainEncoders();
+        drive.turningR90 = false;
+        drive.haventresetEncodersYet = true;
+        drive.turnGoal = 0.0;
       }
-
-      // if(drive.turningTimer.get() > 0.75){ // need to create variables for how long a turn is supposed to take
-      //   drive.turningR90 = false;
-      //   drive.haventresetEncodersYet = true;
-      //   drive.turningEncoders = 0.0;
-      //   drive.turnGoal = 0.0;
-      // }
     }
+
+
+    // System.out.println("timer: " + drive.turningTimer.get());
+    // System.out.println("turngoal: " + drive.turnGoal);
+    // System.out.println("turningEncoders: " + drive.turningEncoders);
+
+    // if(this.xbox.getRawButton(1) && drive.button1Boolean){
+    //   // if(drive.haventresetEncodersYet){
+    //   //   drive.resetDriveTrainEncoders();
+    //   //   drive.haventresetEncodersYet = false;
+    //   // }
+    //   drive.resetDriveTrainEncoders();
+    //   drive.turningL90 = true;
+    //   //drive.turnGoal += drive.ninetyDegreeTurnInches;
+    //   drive.turnGoal = drive.ninetyDegreeTurnInches;
+    //   //drive.turnGoal += 2;
+    //   drive.turningTimer.reset();
+    // }
+    // /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // if(this.xbox.getRawButton(2) && drive.button2Boolean){
+    //   //drive.turningEncoders = drive.flMotor.getEncoder().getPosition();
+    //   // if(drive.turningL90){
+    //   //   drive.resetDriveTrainEncoders();
+    //   // }
+    //   // if(drive.haventresetEncodersYet){
+    //   //   drive.resetDriveTrainEncoders();
+    //   //   drive.haventresetEncodersYet = false;
+    //   // }
+    //   drive.resetDriveTrainEncoders();
+    //   drive.turningR90 = true;
+    //   //drive.turnGoal += drive.ninetyDegreeTurnInches;
+    //   // drive.turnGoal = drive.ninetyDegreeTurnInches;
+    //   drive.turnGoal = drive.ninetyDegreeTurnInches;
+    //   drive.turningTimer.reset();
+    // }
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // if(drive.turningL90){
+    //   drive.driveTrainByInches(drive.turnGoal, 4);
+
+    //   if(drive.turningTimer.get() > 1.0){ // need to create variables for how long a turn is supposed to take
+    //     drive.resetDriveTrainEncoders();
+    //     drive.turningL90 = false;
+    //     //drive.haventresetEncodersYet = true;
+    //     drive.turnGoal = 0.0;
+    //     }
+
+    //   // drive.mecanumDrive.driveCartesian(0.0, 0.0, this.quadraticPositionAndSpeed(0.1, 0.5, , currentPosition));
+    //   // this.quadraticPositionAndSpeed(0.1, 0.5, positionGoal, currentPosition)
+    //   // if(!drive.turningR90){
+        
+    //   // }
+    // }
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // if(drive.turningR90){
+    //   drive.driveTrainByInches(drive.turnGoal, 5);
+
+    //   if(drive.turningTimer.get() > 1.0){ // need to create variables for how long a turn is supposed to take
+    //     drive.resetDriveTrainEncoders();
+    //     drive.turningR90 = false;
+    //     //drive.haventresetEncodersYet = true;
+    //     drive.turnGoal = 0.0;
+    //   }
+    //   // if(drive.turningL90){
+    //   //   drive.driveTrainByInches(drive.encodersToInches(drive.turningEncoders), 5);
+    //   // }
+    //   // if(!drive.turningL90){
+        
+    //   // }
+    // }
+      /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     
 
